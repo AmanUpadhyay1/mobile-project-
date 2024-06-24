@@ -1,8 +1,6 @@
 import os
 from dataclasses import dataclass
-
 import psycopg2
-
 
 @dataclass
 class PostgresConfig:
@@ -11,14 +9,13 @@ class PostgresConfig:
     PG_PASSWORD = os.environ.get("PG_PASSWORD", "docker")
     PG_HOST = os.environ.get("PG_HOST", "localhost")
 
-
 class PostgresConnection(PostgresConfig):
     def __init__(self):
         self.connection = None
 
     def __enter__(self):
         try:
-            print(self.PG_HOST)
+            print(f"Connecting to database at {self.PG_HOST}...")
             self.connection = psycopg2.connect(
                 database=self.PG_DATABASE,
                 user=self.PG_USER,
@@ -27,6 +24,8 @@ class PostgresConnection(PostgresConfig):
                 port=5432,
             )
             self.connection.autocommit = False
+            print("Connected successfully!")
+            print(f"Database connection established. Database version: {self.connection.get_dsn_parameters()}")
             return self.connection
         except psycopg2.DatabaseError as e:
             raise e

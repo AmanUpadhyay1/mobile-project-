@@ -1,23 +1,40 @@
-version: "3"
-services: 
-    database_api:
-        build: ./database/
-        container_name: database_api
-        ports:
-            - "8000:8000"
-        env_file: 
-            - ./config/.env.file
-        depends_on: 
-            - database_pg
-    face_encoding:
-        build: ./face_encoding/
-        container_name: face_encoding
-        ports:
-            - "8002:8002"
-    database_pg:
-        image: postgres:latest
-        ports: 
-            - "5432:5432"
-        container_name: database_pg
-        environment: 
-            - POSTGRES_PASSWORD=docker
+version: "3.8"
+
+services:
+  database_pg:
+    image: postgres:latest
+    container_name: database_pg
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: docker  # Use a secure password for production
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  database_api:
+    build: ./database/
+    container_name: database_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./config/.env.file
+    depends_on:
+      - database_pg
+    networks:
+      - app_network
+
+  face_encoding:
+    build: ./face_encoding/
+    container_name: face_encoding
+    ports:
+      - "8002:8002"
+    networks:
+      - app_network
+
+volumes:
+  pgdata:
+
+networks:
+  app_network:

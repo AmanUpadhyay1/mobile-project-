@@ -1,16 +1,10 @@
 import sys
 import requests
 import json
-
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QListView
-from PyQt5.QtWidgets import QMessageBox, QListWidget, QLabel, QLineEdit
-
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QMessageBox, QLabel, QLineEdit
 from app_window import AppWindow
-
 
 class LoginWindow(QMainWindow):
     def __init__(self):
@@ -74,51 +68,59 @@ class LoginWindow(QMainWindow):
                     QMessageBox.about(self, "Login Failed", "\nPlease try again\t\n")
             except requests.exceptions.ConnectionError:
                 QMessageBox.about(
-                    self, "Conenction Error", "\nDatabase is not running\t\n"
+                    self, "Connection Error", "\nDatabase is not running\t\n"
                 )
 
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    style = """
+            QWidget{
+                background: #262D37;
+            }
+            QLabel{
+                color: #fff;
+            }
+            QListView
+            {
+                background: #7e959e;
+            }
+            QLabel#round_count_label, QLabel#highscore_count_label{
+                border: 1px solid #fff;
+                border-radius: 8px;
+                padding: 2px;
+            }
+            QPushButton
+            {
+                color: white;
+                background: #0577a8;
+                border: 1px #DADADA solid;
+                padding: 5px 10px;
+                border-radius: 2px;
+                font-weight: bold;
+                font-size: 9pt;
+                outline: none;
+            }
+            QPushButton:hover{
+                border: 1px #C6C6C6 solid;
+                color: #fff;
+                background: #0892D0;
+            }
+            QLineEdit {
+                padding: 1px;
+                color: #fff;
+                border-style: solid;
+                border: 2px solid #fff;
+                border-radius: 8px;
+            }
+        """
+    app.setStyleSheet(style)
+    w = LoginWindow()
 
-app = QApplication(sys.argv)
-style = """
-        QWidget{
-            background: #262D37;
-        }
-        QLabel{
-            color: #fff;
-        }
-        QListView
-        {
-            background: #7e959e;
-        }
-        QLabel#round_count_label, QLabel#highscore_count_label{
-            border: 1px solid #fff;
-            border-radius: 8px;
-            padding: 2px;
-        }
-        QPushButton
-        {
-            color: white;
-            background: #0577a8;
-            border: 1px #DADADA solid;
-            padding: 5px 10px;
-            border-radius: 2px;
-            font-weight: bold;
-            font-size: 9pt;
-            outline: none;
-        }
-        QPushButton:hover{
-            border: 1px #C6C6C6 solid;
-            color: #fff;
-            background: #0892D0;
-        }
-        QLineEdit {
-            padding: 1px;
-            color: #fff;
-            border-style: solid;
-            border: 2px solid #fff;
-            border-radius: 8px;
-        }
-    """
-app.setStyleSheet(style)
-w = LoginWindow()
-sys.exit(app.exec())
+    # Set up signal handling for graceful exit
+    def signal_handler(sig, frame):
+        QApplication.quit()
+
+    import signal
+    signal.signal(signal.SIGINT, signal_handler)
+
+    sys.exit(app.exec())
